@@ -1,3 +1,5 @@
+[Cydia Packages Search](https://www.ios-repo-updates.com/)
+
 ### [iPhone Dev Wiki](https://iphonedevwiki.net/index.php/Main_Page)
 
 [Theos](https://iphonedevwiki.net/index.php/Theos)
@@ -25,7 +27,7 @@
 [Cydia](https://www.theiphonewiki.com/wiki/Cydia.app)
 *   [Errors](https://www.theiphonewiki.com/wiki/Cydia_Errors)
 *   [CydiaSubstrate](https://www.theiphonewiki.com/wiki/Cydia_Substrate)
-*   [PackageSearch](https://www.ios-repo-updates.com/)
+
 
 [syslog](https://www.theiphonewiki.com/wiki/System_Log)
 

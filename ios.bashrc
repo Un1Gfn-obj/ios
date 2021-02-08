@@ -20,7 +20,7 @@ function ssh_usb {
   /usr/bin/env TERM=xterm-256color /usr/bin/ssh 127.0.0.1 -p 2222 "$@"
 }
 
-# alias ssh='ssh_lan -l mobile'
-# alias sshr='ssh_lan -l mobile'
-alias ssh='ssh_usb -l mobile'
-alias sshr='ssh_usb -l root'
+alias ssh='ssh_lan -l mobile'
+alias sshr='ssh_lan -l root'
+# alias ssh='ssh_usb -l mobile'
+# alias sshr='ssh_usb -l root'
