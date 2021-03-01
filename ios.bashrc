@@ -6,6 +6,7 @@
 # }
 
 function online {
+  [ "$THEOS_DEVICE_IP" = "127.0.0.1" ] || return 0
   pgrep iproxy || { \
     echo
     echo    "  ${FUNCNAME[0]}: error"
@@ -16,12 +17,23 @@ function online {
   }
 }
 
+function ssh2 {
+  online || { echo "${FUNCNAME[0]}: error"; return 1; }
+  /usr/bin/env TERM=xterm-256color /usr/bin/ssh "$THEOS_DEVICE_IP" -p "$THEOS_DEVICE_PORT" -l "$LOGIN" "$@"
+}
+
+function scp2 {
+  online || { echo "${FUNCNAME[0]}: error"; return 1; }
+  echo "copy to $(ssh2 pwd) ..."
+  /usr/bin/scp -P "$THEOS_DEVICE_PORT" "$@" "$LOGIN"@"$THEOS_DEVICE_IP":\~/
+}
+
 # function scp3 {
 #   [ "$#" -eq 3 ] || { echo "${FUNCNAME[0]}: error2"; return 1; }
 #   scp ${@:1:$#-1} "$3"
 # }
 
-function set_up_alias {
+function port_ip_login {
 
   # Built item list
   # shellcheck disable=SC2155
@@ -52,45 +64,35 @@ function set_up_alias {
     DEFAULT="$N"
   fi
 
-  # Preform selection w/ menu
+  # Dialog
   # https://stackoverflow.com/questions/13426908/dialog-in-bash-is-not-grabbing-variables-correctly
   # https://askubuntu.com/questions/491509/how-to-get-dialog-box-input-directed-to-a-variable
   local result=""
   exec 3>&1
-  result="$( xargs env TERM=xterm-256color dialog --default-item "$DEFAULT" --menu TEXT $((${#CHOICES[@]}+8)) $((1+2+MAXLEN+7)) 4 <<<"$ITEMS" 2>&1 1>&3 )"
+  result="$( xargs env TERM=xterm-256color dialog --default-item "$DEFAULT" --menu "select 'ssh2' destination" $((${#CHOICES[@]}+8)) $((1+2+MAXLEN+7)) 4 <<<"$ITEMS" 2>&1 1>&3 )"
   local R="$?"
   exec 3>&-;
   [ "$R" -eq 0 ] || { echo "${FUNCNAME[0]}: error3"; return 1; }
+  clear
+
+  # Save result
+  { [ "$result" -ge 0 ] && [ "$result" -lt "${#CHOICES[@]}" ]; } || { echo "${FUNCNAME[0]}: error4"; return 1; }
+  echo "$result" >"$PREV"
 
   # Set up ssh alias
   # shellcheck disable=SC2139
   case "$result" in
-    0) alias ssh2="online && /usr/bin/env TERM=xterm-256color /usr/bin/ssh 127.0.0.1        -p 2222 -l mobile" ; echo "$result" >"$PREV" ;;
-    1) alias ssh2="online && /usr/bin/env TERM=xterm-256color /usr/bin/ssh 127.0.0.1        -p 2222 -l root"   ; echo "$result" >"$PREV" ;;
-    2) alias ssh2="          /usr/bin/env TERM=xterm-256color /usr/bin/ssh $THEOS_DEVICE_IP -p 22   -l mobile" ; echo "$result" >"$PREV" ;;
-    3) alias ssh2="          /usr/bin/env TERM=xterm-256color /usr/bin/ssh $THEOS_DEVICE_IP -p 22   -l root"   ; echo "$result" >"$PREV" ;;
-    *) { echo "${FUNCNAME[0]}: error4"; return 1; } ;;
+    0) export THEOS_DEVICE_PORT=2222 THEOS_DEVICE_IP=127.0.0.1 LOGIN=mobile ;;
+    1) export THEOS_DEVICE_PORT=2222 THEOS_DEVICE_IP=127.0.0.1 LOGIN=root   ;;
+    2) export THEOS_DEVICE_PORT=22                             LOGIN=mobile ;;
+    3) export THEOS_DEVICE_PORT=22                             LOGIN=root   ;;
   esac
-  clear
-  echo -n "[$result] "; alias ssh2
-  echo
-
-  # # Set up scp alias
-  # # shellcheck disable=SC2139
-  # case "$result" in
-  #   0) alias scp2="online && /usr/bin/scp 127.0.0.1        -p 2222 -l mobile" ; echo "$result" >"$PREV" ;;
-  #   1) alias scp2="online && /usr/bin/scp 127.0.0.1        -p 2222 -l root"   ; echo "$result" >"$PREV" ;;
-  #   2) alias scp2="          /usr/bin/scp $THEOS_DEVICE_IP -p 22   -l mobile" ; echo "$result" >"$PREV" ;;
-  #   3) alias scp2="          /usr/bin/scp $THEOS_DEVICE_IP -p 22   -l root"   ; echo "$result" >"$PREV" ;;
-  #   *) { echo "${FUNCNAME[0]}: error4"; return 1; } ;;
-  # esac
-  # clear
-  # echo -n "[$result] "; alias scp2
-  # echo
+  echo -n "[$result] "
+  echo "$LOGIN@$THEOS_DEVICE_IP:$THEOS_DEVICE_PORT"
 
 }
 
-set_up_alias
+port_ip_login
 
 export THEOS=/opt/theos
 export ARCHS="arm64"
