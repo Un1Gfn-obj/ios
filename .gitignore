@@ -2,3 +2,7 @@
 /secret.bashrc
 /secret.md
 /shsh_*
+
+/toggleproxy
+!/toggleproxy/Makefile
+!/toggleproxy/main.m

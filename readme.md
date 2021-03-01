@@ -36,6 +36,26 @@ $ ./a.out
 # sysctl -w security.mac.proc_enforce=1 security.mac.vnode_enforce=1
 ```
 
+https://github.com/theos/theos/wiki/NIC
+
+```bash
+#
+source ~/ios/ios.bashrc
+$THEOS/bin/nic.pl -t iphone/tool -n toggleproxy -p com.Un1Gfn.toggleproxy -u "Darren Ng"
+#
+make
+scp2 ./.theos/obj/debug/toggleproxy
+#
+make package
+make install
+ssh2 uicache
+#
+make uninstall
+make clean; rm -rfv packages/ .theos/
+ssh2 uicache
+#
+```
+
 ---
 
 ### Social
@@ -134,6 +154,6 @@ https://developer.apple.com/library/archive/documentation/FileManagement/Concept
 
 /Applications/MobileSafari.app
 
-/private/var/mobile/Library/Mobile Documents/com~apple~CloudDocs/Downloads/
+/private/var/mobile/Library/Mobile Documents/com\~apple\~CloudDocs/Downloads/
 
 ---
