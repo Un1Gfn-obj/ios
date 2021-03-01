@@ -16,21 +16,31 @@ function online {
   }
 }
 
+# function scp3 {
+#   [ "$#" -eq 3 ] || { echo "${FUNCNAME[0]}: error2"; return 1; }
+#   scp ${@:1:$#-1} "$3"
+# }
+
 function set_up_alias {
 
   # Built item list
   # shellcheck disable=SC2155
   local SECRET="$(dirname "${BASH_SOURCE[0]}")/secret.bashrc"
+  export THEOS_DEVICE_IP
   # shellcheck disable=SC1090
   { [ -f "$SECRET" ] && source "$SECRET"; } || { echo "${FUNCNAME[0]}: error2"; return 1; } # IP=""
   local CHOICES=(
     "(iproxy usb) [mobile@127.0.0.1:2222]$  "
     "(iproxy usb)   [root@127.0.0.1:2222]#  "
-    "   (lan)      [mobile@$IP]$  "
-    "   (lan)        [root@$IP]#  "
+    "   (lan)      [mobile@$THEOS_DEVICE_IP]$  "
+    "   (lan)        [root@$THEOS_DEVICE_IP]#  "
   )
   # shellcheck disable=SC2155
   local ITEMS="$( for ((i=0;i<${#CHOICES[@]};++i)); do echo "$i" "\"${CHOICES[$i]}\""; done )"
+  local MAXLEN=0
+  for i in "${CHOICES[@]}"; do
+    [ "${#i}" -gt "$MAXLEN" ] && MAXLEN=${#i}
+  done
 
   # Remember previously selected menu item
   local PREV="/tmp/ios_ssh.choice"
@@ -47,25 +57,40 @@ function set_up_alias {
   # https://askubuntu.com/questions/491509/how-to-get-dialog-box-input-directed-to-a-variable
   local result=""
   exec 3>&1
-  result="$( xargs env TERM=xterm-256color dialog --default-item "$DEFAULT" --menu TEXT $((4+8)) $((1+2+38+7)) 4 <<<"$ITEMS" 2>&1 1>&3 )"
+  result="$( xargs env TERM=xterm-256color dialog --default-item "$DEFAULT" --menu TEXT $((${#CHOICES[@]}+8)) $((1+2+MAXLEN+7)) 4 <<<"$ITEMS" 2>&1 1>&3 )"
   local R="$?"
   exec 3>&-;
-
-  # Set up alias
   [ "$R" -eq 0 ] || { echo "${FUNCNAME[0]}: error3"; return 1; }
+
+  # Set up ssh alias
   # shellcheck disable=SC2139
   case "$result" in
-    0) alias ssh="online && /usr/bin/env TERM=xterm-256color /usr/bin/ssh 127.0.0.1 -p 2222 -l mobile" ; echo "$result" >"$PREV" ;;
-    1) alias ssh="online && /usr/bin/env TERM=xterm-256color /usr/bin/ssh 127.0.0.1 -p 2222 -l root"   ; echo "$result" >"$PREV" ;;
-    2) alias ssh="          /usr/bin/env TERM=xterm-256color /usr/bin/ssh $IP       -p 22   -l mobile" ; echo "$result" >"$PREV" ;;
-    3) alias ssh="          /usr/bin/env TERM=xterm-256color /usr/bin/ssh $IP       -p 22   -l root"   ; echo "$result" >"$PREV" ;;
+    0) alias ssh2="online && /usr/bin/env TERM=xterm-256color /usr/bin/ssh 127.0.0.1        -p 2222 -l mobile" ; echo "$result" >"$PREV" ;;
+    1) alias ssh2="online && /usr/bin/env TERM=xterm-256color /usr/bin/ssh 127.0.0.1        -p 2222 -l root"   ; echo "$result" >"$PREV" ;;
+    2) alias ssh2="          /usr/bin/env TERM=xterm-256color /usr/bin/ssh $THEOS_DEVICE_IP -p 22   -l mobile" ; echo "$result" >"$PREV" ;;
+    3) alias ssh2="          /usr/bin/env TERM=xterm-256color /usr/bin/ssh $THEOS_DEVICE_IP -p 22   -l root"   ; echo "$result" >"$PREV" ;;
     *) { echo "${FUNCNAME[0]}: error4"; return 1; } ;;
   esac
   clear
-  echo -n "[$result] "; alias ssh
+  echo -n "[$result] "; alias ssh2
   echo
+
+  # # Set up scp alias
+  # # shellcheck disable=SC2139
+  # case "$result" in
+  #   0) alias scp2="online && /usr/bin/scp 127.0.0.1        -p 2222 -l mobile" ; echo "$result" >"$PREV" ;;
+  #   1) alias scp2="online && /usr/bin/scp 127.0.0.1        -p 2222 -l root"   ; echo "$result" >"$PREV" ;;
+  #   2) alias scp2="          /usr/bin/scp $THEOS_DEVICE_IP -p 22   -l mobile" ; echo "$result" >"$PREV" ;;
+  #   3) alias scp2="          /usr/bin/scp $THEOS_DEVICE_IP -p 22   -l root"   ; echo "$result" >"$PREV" ;;
+  #   *) { echo "${FUNCNAME[0]}: error4"; return 1; } ;;
+  # esac
+  # clear
+  # echo -n "[$result] "; alias scp2
+  # echo
 
 }
 
 set_up_alias
 
+export THEOS=/opt/theos
+export ARCHS="arm64"

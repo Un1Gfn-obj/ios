@@ -7,6 +7,7 @@ strict digraph Theos {
     "tapi-git"
     "uuid"
     "xar-tpoechtrage-git"
+    "..."
   } -> "theos-cctools-aarch64-git" -> "theos-git";
   "ldid2" -> "theos-git";
   "llvm-libs" -> { "clang" "llvm" };
