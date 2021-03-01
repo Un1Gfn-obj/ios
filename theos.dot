@@ -1,0 +1,13 @@
+// dot -Tsvg -s72 theos.dot >theos.svg
+strict digraph Theos {
+  rankdir=BT;
+  {
+    "clang"
+    "llvm"
+    "tapi-git"
+    "uuid"
+    "xar-tpoechtrage-git"
+  } -> "theos-cctools-aarch64-git" -> "theos-git";
+  "ldid2" -> "theos-git";
+  "llvm-libs" -> { "clang" "llvm" };
+}

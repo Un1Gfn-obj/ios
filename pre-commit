@@ -1,0 +1,17 @@
+#!/bin/bash
+# ln -sv "../../pre-commit" .git/hooks/pre-commit
+
+N="theos.svg"
+O="theos.dot"
+
+{ [ -f "$N" ] && [ -f "$O" ] && [ "$N" -nt "$O" ]; } || {
+  echo
+  echo "  error: '$O' newer than '$N'"
+  echo "  please update '$N' according to comments in '$O'"
+  echo
+  echo "  abort"
+  echo
+  exit 1
+}
+
+exit 0
