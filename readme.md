@@ -1,5 +1,7 @@
 ### [Theos](https://github.com/theos/theos)
 
+[autoconf --build --host --target](https://www.gnu.org/software/autoconf/manual/autoconf-2.68/html_node/Specifying-Target-Triplets.html)
+
 ![TheosDepsGraph](./theos.svg)
 
 [sdks](https://github.com/theos/sdks) [nic](https://github.com/theos/nic) [logos](https://github.com/theos/logos)
