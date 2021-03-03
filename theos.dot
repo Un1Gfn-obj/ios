@@ -1,14 +1,60 @@
 // dot -Tsvg -s72 theos.dot >theos.svg
-strict digraph Theos {
+// dot -Tsvg:cairo -s72 theos.dot >theos.svg // Links not clickable
+strict digraph Theos  {
+
+  // https://stackoverflow.com/q/8809518/
+  // layout=neato;
+  // // tailclip=false;
+  // // headclip=false;
+  // overlap=prism1;
+  // overlap_scaling="-3"
+  // sep="+1";
+
+  // https://graphviz.org/doc/info/attrs.html#d:rank
+  // https://graphviz.org/doc/info/attrs.html#d:constraint
   rankdir=BT;
+
+  // https://stackoverflow.com/questions/26553273/how-to-set-default-node-shape-to-box-instead-of-oval
+  // https://graphviz.org/doc/info/lang.html
+  // ... default attribute is defined using a node, edge, or graph statement ...
+  edge [arrowhead=normal,arrowsize=0.612/*,constraint=false*/];
+
+  // https://graphviz.org/doc/info/shapes.html
+  // ... shape=plain ... size of the node is totally determined by the label
+  // ... otherwise ... node to be larger ... edges are clipped away from the label
+  node [shape=plain];
+
+  /* Repository       */ node [fontcolor=Gray];
+  // printf "%s\n" llvm clang libbsd util-linux-libs llvm-libs | xargs -I '{}' -n 1 pacman -Ss ^{}$
+  llvm              [label=<<u>llvm</u>>            URL="https://archlinux.org/packages/extra/x86_64/llvm/"];
+  clang             [label=<<u>clang</u>>           URL="https://archlinux.org/packages/extra/x86_64/clang/"];
+  libbsd            [label=<<u>libbsd</u>>          URL="https://archlinux.org/packages/extra/x86_64/libbsd/"];
+  "llvm-libs"       [label=<<u>llvm-libs</u>>       URL="https://archlinux.org/packages/extra/x86_64/llvm-libs/"];
+  "util-linux-libs" [label=<<u>util-linux-libs</u>> URL="https://archlinux.org/packages/core/x86_64/util-linux-libs/"];
+
+  /* AUR (Un1Gfn)     */ node [fontcolor=Green]; 
+  toolchain [label=/*"*/<<u>theos-cctools-aarch64-git</u>>/*"*/ URL="https://aur.archlinux.org/packages/theos-cctools-aarch64-git/"];
+
+  /* AUR (thirdparty) */ node [fontcolor=Blue];
+  uuid      [label=<<u>uuid</u>> URL="https://aur.archlinux.org/packages/uuid/"];
+  ldid      [label=<<u>ldid2</u>> URL="https://aur.archlinux.org/packages/ldid2/"];
+  tapi      [/*"*/label=<<u>tapi-git</u>>/*"*/ URL="https://aur.archlinux.org/packages/tapi-git/"];
+  theos     [/*"*/label=<<u>theos-git</u>>/*"*/ URL="https://aur.archlinux.org/packages/theos-git/"];
+  xar       [/*"*/label=<<u>xar-tpoechtrage-git</u>>/*"*/ URL="https://aur.archlinux.org/packages/xar-tpoechtrage-git/"];
+
+  /* Dependency       */
   {
-    "clang"
-    "llvm"
-    "tapi-git"
-    "uuid"
-    "xar-tpoechtrage-git"
-    "..."
-  } -> "theos-cctools-aarch64-git" -> "theos-git";
-  "ldid2" -> "theos-git";
-  "llvm-libs" -> { "clang" "llvm" };
+    "util-linux-libs"
+    clang
+    libbsd
+    llvm
+    tapi
+    uuid
+    xar
+  } -> toolchain -> theos;
+  ldid -> theos;
+  "llvm-libs" -> { clang llvm };
+
 }
+
+
