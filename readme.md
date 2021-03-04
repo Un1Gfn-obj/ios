@@ -1,8 +1,41 @@
+<!--
+https://mail.google.com/mail/u/0/#inbox
+https://www.theiphonewiki.com/wiki//System/Library/CoreServices/SpringBoard.app
+https://github.com/theos/theos/wiki/Upgrading-from-legacy-Theos
+https://github.com/theos/theos/wiki/Structure
+https://github.com/theiostream/theos-ref
+https://github.com/theos/theos/wiki/Installation-Linux
+https://github.com/theos/theos/issues/131
+https://docs.godotengine.org/en/stable/development/compiling/cross-compiling_for_ios_on_linux.html
+https://docs.huihoo.com/godotengine/godot-docs/godot/reference/cross-compiling_for_ios_on_linux.html
+https://demensdeum.com/blog/2020/05/01/linux-to-ios-crosscompile-sdl/
+https://docs.godotengine.org/en/latest/development/compiling/cross-compiling_for_ios_on_linux.html
+https://github.com/theos/theos/wiki/NIC
+https://github.com/theos/theos/wiki/Installation
+-->
+
+<!--
+https://clang.llvm.org/docs/CrossCompilation.html
+https://iphonedevwiki.net/index.php/Theos
+https://github.com/theos/theos/wiki/Features
+https://iphonedevwiki.net/index.php/Theos/Setup
+https://github.com/theiostream/theos-ref/blob/master/theosref_legacy.md
+-->
+
 ### [Theos](https://github.com/theos/theos)
 
-[autoconf --build --host --target](https://www.gnu.org/software/autoconf/manual/autoconf-2.68/html_node/Specifying-Target-Triplets.html)
+<!-- https://github.github.com/gfm/#html-block -->
+<details><summary>dependency graph</summary>
+
+---
 
 ![TheosDepsGraph](./theos.svg)
+
+---
+
+</details>
+
+[autoconf --build --host --target](https://www.gnu.org/software/autoconf/manual/autoconf-2.68/html_node/Specifying-Target-Triplets.html)
 
 [sdks](https://github.com/theos/sdks) [nic](https://github.com/theos/nic) [logos](https://github.com/theos/logos)
 
@@ -10,7 +43,8 @@
 THEOS=/opt/theos
 ```
 
-[clang6.x?](https://github.com/theos/theos/wiki/Installation-Linux)  
+<!-- https://github.github.com/gfm/#hard-line-breaks -->
+[clang6.x?](https://github.com/theos/theos/wiki/Installation-Linux)\
 [dpkg-deb LZMA?](https://github.com/theos/theos/wiki/Upgrading-from-legacy-Theos)
 
 ```plain
@@ -102,7 +136,8 @@ uikittools: /usr/bin/uicache
 
 [ECID](https://www.theiphonewiki.com/wiki/ECID)
 
-**Always save [SHSH](https://www.theiphonewiki.com/wiki/SHSH) before upgrading**  
+<!-- https://github.github.com/gfm/#hard-line-breaks -->
+**Always save [SHSH](https://www.theiphonewiki.com/wiki/SHSH) before upgrading**\
 [Cydia_SHSH_Server](https://www.theiphonewiki.com/wiki/Cydia_SHSH_Server) ->
 [Tss saver](https://tsssaver.1conan.com/v2/) ->
 [1conan/com.1conan.tsssaver](https://repo.1conan.com/)

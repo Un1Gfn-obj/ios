@@ -96,3 +96,6 @@ port_ip_login
 
 export THEOS=/opt/theos
 export ARCHS="arm64"
+
+# https://github.com/alacritty/alacritty/issues/1636#issuecomment-427885737
+echo -e "\033]0;ios\007"
