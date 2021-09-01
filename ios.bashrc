@@ -19,13 +19,21 @@ function online {
 
 function ssh2 {
   online || { echo "${FUNCNAME[0]}: error"; return 1; }
-  /usr/bin/env TERM=xterm-256color /usr/bin/ssh "$THEOS_DEVICE_IP" -p "$THEOS_DEVICE_PORT" -l "$LOGIN" "$@"
+  /usr/bin/env TERM=xterm-256color /usr/bin/ssh "$THEOS_DEVICE_IP" -p "$THEOS_DEVICE_PORT" -l "$THEOS_LOGIN" "$@"
 }
 
 function scp2 {
   online || { echo "${FUNCNAME[0]}: error"; return 1; }
+  [ "$#" -ge 1 ] || { echo "${FUNCNAME[0]}: error2"; return 1; }
   echo "copy to $(ssh2 pwd) ..."
-  /usr/bin/scp -P "$THEOS_DEVICE_PORT" "$@" "$LOGIN"@"$THEOS_DEVICE_IP":\~/
+  /usr/bin/scp -P "$THEOS_DEVICE_PORT" "$@" "$THEOS_LOGIN"@"$THEOS_DEVICE_IP":/private/var/mobile/
+}
+
+function scp3 {
+  online || { echo "${FUNCNAME[0]}: error1"; return 1; }
+  [ "$#" -eq 1 ] || { echo "${FUNCNAME[0]}: error2"; return 1; }
+  read -erp "  $1 -> $PWD/ ?"
+  /usr/bin/scp -rP "$THEOS_DEVICE_PORT" "$THEOS_LOGIN"@"$THEOS_DEVICE_IP":"$1" ./
 }
 
 # function scp3 {
@@ -33,7 +41,7 @@ function scp2 {
 #   scp ${@:1:$#-1} "$3"
 # }
 
-function port_ip_login {
+function export_port_ip_login {
 
   # Built item list
   # shellcheck disable=SC2155
@@ -82,20 +90,33 @@ function port_ip_login {
   # Set up ssh alias
   # shellcheck disable=SC2139
   case "$result" in
-    0) export THEOS_DEVICE_PORT=2222 THEOS_DEVICE_IP=127.0.0.1 LOGIN=mobile ;;
-    1) export THEOS_DEVICE_PORT=2222 THEOS_DEVICE_IP=127.0.0.1 LOGIN=root   ;;
-    2) export THEOS_DEVICE_PORT=22                             LOGIN=mobile ;;
-    3) export THEOS_DEVICE_PORT=22                             LOGIN=root   ;;
+    0) export THEOS_DEVICE_PORT=2222 THEOS_DEVICE_IP=127.0.0.1 THEOS_LOGIN=mobile ;;
+    1) export THEOS_DEVICE_PORT=2222 THEOS_DEVICE_IP=127.0.0.1 THEOS_LOGIN=root   ;;
+    2) export THEOS_DEVICE_PORT=22                             THEOS_LOGIN=mobile ;;
+    3) export THEOS_DEVICE_PORT=22                             THEOS_LOGIN=root   ;;
   esac
   echo -n "[$result] "
-  echo "$LOGIN@$THEOS_DEVICE_IP:$THEOS_DEVICE_PORT"
+  echo "$THEOS_LOGIN@$THEOS_DEVICE_IP:$THEOS_DEVICE_PORT"
 
 }
 
-port_ip_login
 
-export THEOS=/opt/theos
-export ARCHS="arm64"
+# https://iphonedevwiki.net/index.php/Theos#Theos_variables
+function export_theos_variables {
+  export_port_ip_login
+  export THEOS=/opt/theos
+  export ARCHS=(arm64)
+  export TARGET="iphone:clang:14.4:14.4"
+  export sysroot="$THEOS/sdks/iPhoneOS14.4.sdk"
+  export DEBUG=1
+}
+
+export_theos_variables
+
+# For Makefile
+export -f online
+export -f ssh2
+export -f scp2
 
 # https://github.com/alacritty/alacritty/issues/1636#issuecomment-427885737
 echo -e "\033]0;ios\007"
